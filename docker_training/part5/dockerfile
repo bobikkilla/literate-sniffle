@@ -1,0 +1,11 @@
+FROM nginx:latest
+
+COPY mini_server.c /
+COPY ./nginx/nginx.conf /etc/nginx
+
+RUN apt-get update && apt install -y gcc make libfcgi-dev spawn-fcgi && apt-get clean && rm -rf /var/lib/apt/lists/* && \
+gcc mini_server.c -lfcgi -o helloworld
+
+EXPOSE 8080
+
+CMD spawn-fcgi -p 8080 helloworld && nginx -g 'daemon off;'
